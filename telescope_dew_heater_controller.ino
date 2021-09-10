@@ -20,6 +20,8 @@ float R1 = 10000;
 float logR2, R2, T, Tc1, Tc2, dewPoint;
 float c1 = 1.009249522e-03, c2 = 2.378405444e-04, c3 = 2.019202697e-07;
 
+int heaterCycle1, heaterCycle2;
+
 //Initializing LED Pin
 int heater_pin1 = 5;
 int heater_pin2 = 3;
@@ -59,19 +61,30 @@ void loop() {
     Serial.print(dewPoint);
     Serial.println(" C");
 
-  int heaterCycle1 = map(Tc1, dewPoint, dewPoint + 5, 255, 0);
-  int heaterCycle2 = map(Tc2, dewPoint, dewPoint + 5, 255, 0);
+  heaterCycle1 = map(Tc1 * 100, dewPoint * 100, (dewPoint + 5) * 100, 255, 0);
+  heaterCycle2 = map(Tc2 * 100, dewPoint * 100, (dewPoint + 5) * 100, 255, 0);
 
-  Serial.print("Probe 1:: "); 
+  heaterCycle1 = constrain(heaterCycle1, 0, 255);
+  heaterCycle2 = constrain(heaterCycle2, 0, 255);
+
+  Serial.print("Probe 1: ");
   Serial.print(Tc1);
   Serial.print(" C");
-  Serial.print(", heaterCycle1: ");
+  Serial.print(", Heater Cycle 1: ");
   Serial.println(heaterCycle1);
+
+  Serial.print("Probe 2: "); 
+  Serial.print(Tc2);
+  Serial.print(" C");
+  Serial.print(", Heater Cycle 2: ");
+  Serial.println(heaterCycle2);
+
+  Serial.println();
 
   analogWrite(heater_pin1, heaterCycle1);
   analogWrite(heater_pin2, heaterCycle2);
 
-  delay(2000);
+  delay(10000);
 }
 
 float calculateTemperature(int Vo){
